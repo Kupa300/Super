@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Generatore Robux</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --main-color: #00b06b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f2f2;
+    }
+
+    .header {
+      background-color: #ffffff;
+      padding: 15px 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .header img {
+      height: 28px;
+      max-width: 100%;
+    }
+
+    .container {
+      max-width: 480px;
+      width: 90%;
+      margin: 30px auto;
+      background-color: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+
+    .container h2 {
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: var(--main-color);
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .progress-bar {
+      width: 100%;
+      background-color: #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 20px;
+    }
+
+    .progress-bar-fill {
+      height: 20px;
+      width: 0;
+      background-color: var(--main-color);
+      transition: width 0.3s;
+    }
+
+    .message {
+      margin-top: 25px;
+      font-size: 16px;
+      color: green;
+      font-weight: bold;
+    }
+
+    .chat-box {
+      background: #f4f4f4;
+      border-radius: 5px;
+      padding: 10px;
+      text-align: left;
+      margin-top: 20px;
+      max-height: 150px;
+      overflow-y: auto;
+      font-size: 14px;
+      color: #444;
+      border: 1px solid #ccc;
+    }
+
+    .chat-msg {
+      margin-bottom: 8px;
+    }
+
+    .footer {
+      margin: 40px 10px 20px;
+      text-align: center;
+      color: #999;
+      font-size: 12px;
+    }
+
+    .code-box {
+      margin-top: 15px;
+      background-color: #e8f7e4;
+      padding: 10px;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 18px;
+      letter-spacing: 1px;
+      color: #007e00;
+      word-break: break-word;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px;
+      }
+
+      .container h2 {
+        font-size: 18px;
+      }
+
+      input, select, button {
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/Roblox_Logo_2022.svg" alt="Roblox">
+  </div>
+
+  <div class="container" id="loginSection">
+    <h2>Accedi per generare Robux</h2>
+    <form id="fakeLoginForm">
+      <input type="text" id="username" placeholder="Nome utente o email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Accedi</button>
+    </form>
+  </div>
+
+  <div class="container hidden" id="generatorSection">
+    <h2>Generatore Robux</h2>
+    <p>Benvenuto, <span id="userDisplay"></span>! Seleziona la quantità da generare.</p>
+    <select id="robuxAmount">
+      <option value="100">100 Robux</option>
+      <option value="500">500 Robux</option>
+      <option value="999">999 Robux</option>
+      <option value="5000">5000 Robux</option>
+    </select>
+    <button onclick="startGeneration()">Genera</button>
+
+    <div class="progress-bar hidden" id="progressBar">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+
+    <div class="chat-box hidden" id="chatBox"></div>
+    <div class="message" id="resultMessage"></div>
+    <div class="code-box hidden" id="codeBox">CODICE-ROBLOX-XXXX</div>
+  </div>
+
+  <div class="footer">
+    © 2025 Roblox Corporation (Simulazione educativa - nessun Robux reale generato)
+  </div>
+
+  <audio id="successSound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3" preload="auto"></audio>
+
+  <script>
+    const loginForm = document.getElementById('fakeLoginForm');
+    const loginSection = document.getElementById('loginSection');
+    const generatorSection = document.getElementById('generatorSection');
+    const userDisplay = document.getElementById('userDisplay');
+    const progressBar = document.getElementById('progressBar');
+    const progressFill = document.getElementById('progressFill');
+    const resultMessage = document.getElementById('resultMessage');
+    const chatBox = document.getElementById('chatBox');
+    const codeBox = document.getElementById('codeBox');
+    const successSound = document.getElementById('successSound');
+
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      loginSection.classList.add('hidden');
+      generatorSection.classList.remove('hidden');
+      userDisplay.textContent = username;
+    });
+
+    function startGeneration() {
+      const selectedAmount = document.getElementById('robuxAmount').value;
+      progressBar.classList.remove('hidden');
+      progressFill.style.width = '0%';
+      chatBox.innerHTML = '';
+      chatBox.classList.remove('hidden');
+      codeBox.classList.add('hidden');
+      resultMessage.textContent = '';
+
+      const messages = [
+        "🔍 Connessione ai server Roblox...",
+        "🔐 Autenticazione utente...",
+        `📦 Generazione di ${selectedAmount} Robux...`,
+        "📤 Inviando Robux al tuo account...",
+        "✅ Operazione completata con successo!"
+      ];
+
+      let progress = 0;
+      let msgIndex = 0;
+
+      const interval = setInterval(() => {
+        progress += 20;
+        progressFill.style.width = progress + '%';
+
+        if (msgIndex < messages.length) {
+          const msg = document.createElement('div');
+          msg.classList.add('chat-msg');
+          msg.textContent = messages[msgIndex];
+          chatBox.appendChild(msg);
+          chatBox.scrollTop = chatBox.scrollHeight;
+          msgIndex++;
+        }
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          resultMessage.innerHTML = `🎉 Hai ricevuto <strong>${selectedAmount} Robux</strong> (simulazione)`;
+          codeBox.textContent = "ROBLOX-" + Math.random().toString(36).substr(2, 4).toUpperCase() + "-" + Math.floor(1000 + Math.random() * 9000);
+          codeBox.classList.remove('hidden');
+          successSound.play();
+        }
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
